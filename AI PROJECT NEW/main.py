@@ -11,7 +11,7 @@ load_dotenv()
 
 
 def get_jira_connection():
-    # אנחנו מגדירים לו מפורשות להשתמש בגרסה 3 החדשה של ג'ירה
+    
     jira_options = {
         'server': os.getenv('JIRA_URL'),
         'rest_api_version': '3'
