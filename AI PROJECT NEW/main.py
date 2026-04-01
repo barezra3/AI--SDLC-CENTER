@@ -144,3 +144,37 @@ def update_jira_task_description(issue_key, new_description):
         return True
     except:
         return False
+
+
+def map_tasks_to_iso27001(df: pd.DataFrame, language: str = "English") -> str:
+    """
+    Core GRC Engine: Maps Jira tasks to ISO 27001 controls for audit readiness.
+    """
+    # 
+    if df.empty:
+        return "No tasks available for compliance mapping."
+
+    context_data = df[['ID', 'Summary', 'Status', 'Priority']].to_string()
+
+    prompt = f"""
+    You are a Lead GRC (Governance, Risk, and Compliance) Expert and a certified ISO 27001:2022 Auditor.
+    Your objective is to analyze the following Jira sprint tasks and identify which tasks can serve as **Audit Evidence** for specific ISO 27001 controls.
+
+    Instructions:
+    1. Scan the tasks and select ONLY the ones related to security, infrastructure, access control, backups, privacy, or monitoring.
+    2. Map each selected task to the most relevant ISO 27001 Annex A control (e.g., A.8.12 Data leakage prevention, A.9.2.1 User registration).
+    3. Provide an "Auditor Justification" explaining exactly WHY this specific task proves compliance with the control.
+
+    Output Format:
+    Create a professional, highly readable Markdown table with the following columns:
+    | Task ID | Jira Summary | ISO 27001 Control | Auditor Justification | Status |
+
+    After the table, add a brief paragraph summarizing the overall security posture of this sprint from an auditor's perspective.
+
+    IMPORTANT: Write the entire response in {language}.
+
+    Jira Tasks Context:
+    {context_data}
+    """
+
+    return ai_query(prompt)
